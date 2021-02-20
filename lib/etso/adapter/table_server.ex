@@ -47,7 +47,7 @@ defmodule Etso.Adapter.TableServer do
     end
   end
 
-  defp maybe_backup(table_path) do
+  defp maybe_restore(table_path) do
     bak = "#{table_path}.bak"
     if File.exists?(bak) do
       File.copy!(bak, table_path)
