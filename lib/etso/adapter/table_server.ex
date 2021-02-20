@@ -19,12 +19,24 @@ defmodule Etso.Adapter.TableServer do
 
   @impl GenServer
   def init({repo, schema}) do
-    table_name = Module.concat([repo, schema])
-    table_reference = :ets.new(table_name, [:set, :public])
-
-    case TableRegistry.register_table(repo, schema, table_reference) do
-      :ok -> {:ok, table_reference}
-      {:error, reason} -> {:stop, reason}
+    with table_name <- Module.concat([repo, schema]),
+         table_path <- table_path(table_name),
+         # table_reference <- :ets.new(table_name, [:set, :public])
+         table_reference <- PersistentEts.new(table_name, table_path, [:set, :public])
+         :ok <- TableRegistry.register_table(repo, schema, table_reference) do
+      {:ok, table_reference}
+    else
+      {:error, reason} ->
+        {:stop, reason}
     end
+  end
+
+  defp table_path(table_name) do
+    table_name
+    |> to_string()
+    |> String.replace_leading("Elixir.", "")
+    |> String.downcase()
+    |> String.replace(".", "_")
+    |> Kernel.<>(".tab")
   end
 end

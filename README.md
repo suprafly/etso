@@ -1,4 +1,6 @@
-# Etso
+# Etso (with PersistentEts)
+
+**This is an experimental fork of the Etso library that attempts to use PersistentEts underthe hood.**
 
 **Etso** is an [ETS][erlang-ets] adapter, allowing you to use `Ecto` schemas with ETS tables.
 
@@ -77,7 +79,7 @@ Originally, Etso was created to answer the question of whether ETS and Ecto can 
 
 *If you have other Use Cases for this library, please add it here with a Pull Request.*
 
-- The [Erlef Website](https://github.com/erlef/website) is using Etso to cache and query news and event posts that are parsed and imported into the Repo on application startup. 
+- The [Erlef Website](https://github.com/erlef/website) is using Etso to cache and query news and event posts that are parsed and imported into the Repo on application startup.
 
 ## Further Note
 
