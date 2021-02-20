@@ -51,6 +51,7 @@ defmodule Etso.Adapter.TableServer do
     bak = "#{table_path}.bak"
     if File.exists?(bak) do
       File.copy!(bak, table_path)
+      File.rm!(bak)
     end
   end
 end
