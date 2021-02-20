@@ -21,7 +21,9 @@ defmodule Etso.Adapter.TableServer do
   def init({repo, schema}) do
     with table_name <- Module.concat([repo, schema]),
          table_path <- table_path(repo),
+         _ <- maybe_backup(table_path),
          table_reference <- PersistentEts.new(table_name, table_path, [:set, :public]),
+         _ <- maybe_restore(table_path),
          :ok <- TableRegistry.register_table(repo, schema, table_reference) do
       {:ok, table_reference}
     else
@@ -37,5 +39,18 @@ defmodule Etso.Adapter.TableServer do
     |> String.downcase()
     |> String.replace(".", "_")
     |> Kernel.<>(".tab")
+  end
+
+  defp maybe_backup(table_path) do
+    if File.exists?(table_path) do
+      File.copy!(table_path, "#{table_path}.bak")
+    end
+  end
+
+  defp maybe_backup(table_path) do
+    bak = "#{table_path}.bak"
+    if File.exists?(bak) do
+      File.copy!(bak, table_path)
+    end
   end
 end
