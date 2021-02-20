@@ -21,8 +21,7 @@ defmodule Etso.Adapter.TableServer do
   def init({repo, schema}) do
     with table_name <- Module.concat([repo, schema]),
          table_path <- table_path(table_name),
-         # table_reference <- :ets.new(table_name, [:set, :public])
-         table_reference <- PersistentEts.new(table_name, table_path, [:set, :public])
+         table_reference <- PersistentEts.new(table_name, table_path, [:set, :public]),
          :ok <- TableRegistry.register_table(repo, schema, table_reference) do
       {:ok, table_reference}
     else
