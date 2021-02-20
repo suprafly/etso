@@ -20,7 +20,7 @@ defmodule Etso.Adapter.TableServer do
   @impl GenServer
   def init({repo, schema}) do
     with table_name <- Module.concat([repo, schema]),
-         table_path <- table_path(table_name),
+         table_path <- table_path(repo),
          table_reference <- PersistentEts.new(table_name, table_path, [:set, :public]),
          :ok <- TableRegistry.register_table(repo, schema, table_reference) do
       {:ok, table_reference}
@@ -30,8 +30,8 @@ defmodule Etso.Adapter.TableServer do
     end
   end
 
-  defp table_path(table_name) do
-    table_name
+  defp table_path(repo_module) do
+    repo_module
     |> to_string()
     |> String.replace_leading("Elixir.", "")
     |> String.downcase()
