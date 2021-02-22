@@ -20,7 +20,7 @@ defmodule Etso.Adapter.TableServer do
   @impl GenServer
   def init({repo, schema}) do
     with table_name <- Module.concat([repo, schema]),
-         table_path <- table_path(repo),
+         table_path <- table_path(repo, schema),
          _ <- maybe_backup(table_path),
          table_reference <- PersistentEts.new(table_name, table_path, [:set, :public]),
          _ <- maybe_restore(table_path),
@@ -32,13 +32,21 @@ defmodule Etso.Adapter.TableServer do
     end
   end
 
-  defp table_path(repo_module) do
+  defp table_path(repo_module, schema_module) do
     repo_module
     |> to_string()
     |> String.replace_leading("Elixir.", "")
     |> String.downcase()
     |> String.replace(".", "_")
+    |> Kernel.<>("_#{schema_hash(schema_module)}")
     |> Kernel.<>(".tab")
+  end
+
+  defp schema_hash(schema_module) do
+    :md5
+    |> :crypto.hash(to_string(schema_module))
+    |> Base.encode16()
+    |> String.downcase()
   end
 
   defp maybe_backup(table_path) do
